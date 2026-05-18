@@ -29,13 +29,8 @@ def test_render_integrations_table_empty_shows_hint() -> None:
 def test_repl_print_resets_before_each_line(monkeypatch) -> None:
     resets: list[bool] = []
 
-    class _Stdout:
-        def isatty(self) -> bool:
-            return True
-
-    monkeypatch.setattr("app.cli.interactive_shell.ui.rendering.sys.stdout", _Stdout())
     monkeypatch.setattr(
-        "app.cli.interactive_shell.ui.choice_menu.ensure_tty_column_zero",
+        "app.cli.interactive_shell.ui.choice_menu.prepare_repl_output_line",
         lambda: resets.append(True),
     )
 
@@ -51,13 +46,8 @@ def test_render_integrations_table_resets_tty_before_print(monkeypatch) -> None:
     """Regression: padded inline menus leave the cursor at a high column."""
     resets: list[bool] = []
 
-    class _Stdout:
-        def isatty(self) -> bool:
-            return True
-
-    monkeypatch.setattr("app.cli.interactive_shell.ui.rendering.sys.stdout", _Stdout())
     monkeypatch.setattr(
-        "app.cli.interactive_shell.ui.choice_menu.ensure_tty_column_zero",
+        "app.cli.interactive_shell.ui.choice_menu.prepare_repl_output_line",
         lambda: resets.append(True),
     )
 

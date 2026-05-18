@@ -27,6 +27,7 @@ from app.cli.interactive_shell.ui import (
 )
 from app.cli.interactive_shell.ui.choice_menu import (
     CRUMB_SEP,
+    prepare_repl_output_line,
     repl_choose_one,
     repl_section_break,
     repl_tty_interactive,
@@ -58,8 +59,6 @@ def _mcp_service_choices() -> list[tuple[str, str]]:
 
 def _render_integration_show(console: Console, service: str) -> bool:
     """Verify and print one integration. Returns False when the service is unknown."""
-    from app.cli.interactive_shell.ui.choice_menu import prepare_repl_output_line
-
     normalized = service.strip().lower()
     configured = set(repl_data.configured_integration_names())
     if normalized not in configured:
@@ -137,12 +136,14 @@ def _cmd_integrations(session: ReplSession, console: Console, args: list[str]) -
     sub = (args[0].lower() if args else "list").strip()
 
     if sub in ("list", "ls"):
+        prepare_repl_output_line()
         with console.status(f"[{DIM}]Verifying integrations…[/]", spinner="dots"):
             results = repl_data.load_verified_integrations()
         render_integrations_table(console, results)
         return True
 
     if sub == "verify":
+        prepare_repl_output_line()
         with console.status(f"[{DIM}]Verifying integrations…[/]", spinner="dots"):
             results = repl_data.load_verified_integrations()
         render_integrations_table(console, results)

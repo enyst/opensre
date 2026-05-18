@@ -56,11 +56,9 @@ def prepare_repl_output_line() -> None:
 
 def repl_section_break(console: Console) -> None:
     """Blank line + dim rule between an inline menu step and Rich output."""
-    ensure_tty_column_zero()
+    prepare_repl_output_line()
     console.print()
-    ensure_tty_column_zero()
     console.rule(characters="─", style=DIM)
-    ensure_tty_column_zero()
     console.print()
 
 

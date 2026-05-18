@@ -788,22 +788,6 @@ class _StreamingConsole(Console):
     def cancel_requested(self) -> bool:
         return self._cancel_event.is_set()
 
-    def print(self, *args: Any, **kwargs: Any) -> None:
-        """Reset the TTY column before each print when not streaming.
-
-        Inline menus pad rows to the terminal width, leaving the cursor on a
-        high column. Rich output that follows (tables, follow-up status lines,
-        section rules) must start at column zero or lines appear broken.
-        """
-        if not self._spinner.streaming:
-            from app.cli.interactive_shell.ui.choice_menu import prepare_repl_output_line
-            from app.cli.interactive_shell.ui.rendering import _repl_table_width
-
-            prepare_repl_output_line()
-            if sys.stdout.isatty():
-                kwargs.setdefault("width", _repl_table_width(self))
-        super().print(*args, **kwargs)
-
 
 async def _run_interactive(
     session: ReplSession,

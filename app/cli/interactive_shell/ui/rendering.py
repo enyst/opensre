@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import shutil
-import sys
 from typing import Any
 
 from rich import box
@@ -79,8 +78,6 @@ def repl_print(console: Console, *objects: Any, **kwargs: Any) -> None:
     from app.cli.interactive_shell.ui.choice_menu import prepare_repl_output_line
 
     prepare_repl_output_line()
-    if sys.stdout.isatty() and "width" not in kwargs:
-        kwargs.setdefault("width", _repl_table_width(console))
     console.print(*objects, **kwargs)
 
 
