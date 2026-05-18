@@ -3,9 +3,10 @@ from __future__ import annotations
 import asyncio
 import collections
 import shutil
+import sys
 import urllib.error
 from typing import Any
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -20,6 +21,7 @@ from app.remote.server import (
     DeepHealthCheck,
     InvestigateRequest,
     _check_disk_health,
+    _check_llm_connectivity,
     _check_memory_health,
     _imds_get,
     _imds_token,
@@ -29,6 +31,20 @@ from app.remote.server import (
 )
 from app.remote.stream import StreamEvent
 from app.remote.vercel_poller import VercelResolutionError
+
+
+class _UrlopenResponse:
+    def __init__(self, body: str) -> None:
+        self._body = body
+
+    def __enter__(self) -> _UrlopenResponse:
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
+
+    def read(self) -> bytes:
+        return self._body.encode("utf-8")
 
 
 @pytest.fixture
@@ -457,6 +473,7 @@ def test_imds_token_returns_none_on_url_error(monkeypatch: pytest.MonkeyPatch) -
         raise urllib.error.URLError("connection refused")
 
     monkeypatch.setattr("urllib.request.urlopen", _raise_url_error)
+    remote_server._REPORTED_REMOTE_EVENTS.clear()
 
     assert _imds_token() is None
 
@@ -484,8 +501,156 @@ def test_imds_get_returns_none_on_url_error(monkeypatch: pytest.MonkeyPatch) -> 
         raise urllib.error.URLError("connection refused")
 
     monkeypatch.setattr("urllib.request.urlopen", _raise_url_error)
+    remote_server._REPORTED_REMOTE_EVENTS.clear()
 
     assert _imds_get("latest/meta-data/instance-id", token="test-token") is None
+
+
+def test_imds_token_reports_failure_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    def _raise_url_error(*args: object, **kwargs: object) -> None:
+        raise urllib.error.URLError("connection refused")
+
+    monkeypatch.setattr("urllib.request.urlopen", _raise_url_error)
+    remote_server._REPORTED_REMOTE_EVENTS.clear()
+
+    with patch("app.remote.server.report_remote_exception") as report:
+        assert _imds_token() is None
+        assert _imds_token() is None
+
+    report.assert_called_once()
+    assert report.call_args.kwargs["component"] == "server"
+    assert report.call_args.kwargs["event"] == "imds_token_fetch_failed"
+    assert report.call_args.kwargs["severity"] == "info"
+
+
+def test_imds_token_reports_again_after_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    responses: list[object] = [
+        urllib.error.URLError("connection refused"),
+        urllib.error.URLError("connection refused"),
+        _UrlopenResponse("test-token"),
+        urllib.error.URLError("connection refused"),
+    ]
+
+    def _urlopen(*args: object, **kwargs: object) -> object:
+        response = responses.pop(0)
+        if isinstance(response, BaseException):
+            raise response
+        return response
+
+    monkeypatch.setattr("urllib.request.urlopen", _urlopen)
+    remote_server._REPORTED_REMOTE_EVENTS.clear()
+
+    with patch("app.remote.server.report_remote_exception") as report:
+        assert _imds_token() is None
+        assert _imds_token() is None
+        assert _imds_token() == "test-token"
+        assert _imds_token() is None
+
+    assert report.call_count == 2
+    assert report.call_args.kwargs["event"] == "imds_token_fetch_failed"
+
+
+def test_imds_get_reports_failure_once(monkeypatch: pytest.MonkeyPatch) -> None:
+    def _raise_url_error(*args: object, **kwargs: object) -> None:
+        raise urllib.error.URLError("connection refused")
+
+    monkeypatch.setattr("urllib.request.urlopen", _raise_url_error)
+    remote_server._REPORTED_REMOTE_EVENTS.clear()
+
+    with patch("app.remote.server.report_remote_exception") as report:
+        assert _imds_get("latest/meta-data/instance-id", token="test-token") is None
+        assert _imds_get("latest/meta-data/instance-id", token="test-token") is None
+
+    report.assert_called_once()
+    assert report.call_args.kwargs["component"] == "server"
+    assert report.call_args.kwargs["event"] == "imds_metadata_fetch_failed"
+    assert report.call_args.kwargs["severity"] == "info"
+
+
+def test_imds_get_reports_again_after_success(monkeypatch: pytest.MonkeyPatch) -> None:
+    responses: list[object] = [
+        urllib.error.URLError("connection refused"),
+        urllib.error.URLError("connection refused"),
+        _UrlopenResponse("i-123"),
+        urllib.error.URLError("connection refused"),
+    ]
+
+    def _urlopen(*args: object, **kwargs: object) -> object:
+        response = responses.pop(0)
+        if isinstance(response, BaseException):
+            raise response
+        return response
+
+    monkeypatch.setattr("urllib.request.urlopen", _urlopen)
+    remote_server._REPORTED_REMOTE_EVENTS.clear()
+
+    with patch("app.remote.server.report_remote_exception") as report:
+        assert _imds_get("latest/meta-data/instance-id", token="test-token") is None
+        assert _imds_get("latest/meta-data/instance-id", token="test-token") is None
+        assert _imds_get("latest/meta-data/instance-id", token="test-token") == "i-123"
+        assert _imds_get("latest/meta-data/instance-id", token="test-token") is None
+
+    assert report.call_count == 2
+    assert report.call_args.kwargs["event"] == "imds_metadata_fetch_failed"
+
+
+def test_check_llm_connectivity_reports_bedrock_failure(monkeypatch: pytest.MonkeyPatch) -> None:
+    class _FakeBoto3:
+        @staticmethod
+        def client(*_args: object, **_kwargs: object) -> object:
+            raise RuntimeError("bedrock down")
+
+    monkeypatch.setenv("LLM_PROVIDER", "bedrock")
+    monkeypatch.setitem(sys.modules, "boto3", _FakeBoto3)
+    remote_server._REPORTED_REMOTE_EVENTS.clear()
+
+    with patch("app.remote.server.report_remote_exception") as report:
+        result = _check_llm_connectivity()
+
+    assert result.status == "failed"
+    assert "bedrock down" in result.detail
+    report.assert_called_once()
+    assert report.call_args.kwargs["component"] == "server"
+    assert report.call_args.kwargs["event"] == "llm_connectivity_check_failed"
+    assert report.call_args.kwargs["severity"] == "warning"
+
+
+def test_check_llm_connectivity_reports_again_after_success(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    responses: list[object] = [
+        RuntimeError("bedrock down"),
+        RuntimeError("bedrock down"),
+        None,
+        RuntimeError("bedrock down"),
+    ]
+
+    class _FakeBedrock:
+        def __init__(self, response: object) -> None:
+            self._response = response
+
+        def list_foundation_models(self, **_kwargs: object) -> None:
+            if isinstance(self._response, BaseException):
+                raise self._response
+
+    class _FakeBoto3:
+        @staticmethod
+        def client(*_args: object, **_kwargs: object) -> object:
+            return _FakeBedrock(responses.pop(0))
+
+    monkeypatch.setenv("LLM_PROVIDER", "bedrock")
+    monkeypatch.setitem(sys.modules, "boto3", _FakeBoto3)
+    remote_server._INSTANCE_METADATA["region"] = "us-east-1"
+    remote_server._REPORTED_REMOTE_EVENTS.clear()
+
+    with patch("app.remote.server.report_remote_exception") as report:
+        assert _check_llm_connectivity().status == "failed"
+        assert _check_llm_connectivity().status == "failed"
+        assert _check_llm_connectivity().status == "passed"
+        assert _check_llm_connectivity().status == "failed"
+
+    assert report.call_count == 2
+    assert report.call_args.kwargs["event"] == "llm_connectivity_check_failed"
 
 
 def test_imds_get_returns_none_on_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
