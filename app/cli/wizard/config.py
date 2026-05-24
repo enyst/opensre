@@ -85,15 +85,15 @@ ANTHROPIC_MODELS = (
 
 # Source: https://platform.openai.com/docs/models
 OPENAI_MODELS = (
-    ModelOption(value="gpt-5.5", label="GPT-5.5"),
     ModelOption(value=OPENAI_REASONING_MODEL, label="GPT-5.4 mini"),
+    ModelOption(value="gpt-5.5", label="GPT-5.5"),
     ModelOption(value="gpt-5.4", label="GPT-5.4"),
     ModelOption(value="gpt-5.4-nano", label="GPT-5.4 nano"),
     ModelOption(value="gpt-5.3-codex", label="GPT-5.3-Codex"),
     ModelOption(value="gpt-5.2-codex", label="GPT-5.2-Codex"),
 )
 
-# Source: https://openrouter.ai/api/v1/models (OpenRouter uses dot-separated versions)
+# Source: https://openrouter.ai/api/v1/models
 OPENROUTER_MODELS = (
     ModelOption(value=OPENROUTER_REASONING_MODEL, label="OpenRouter Auto (smart routing)"),
     ModelOption(value="openai/gpt-5.5", label="GPT-5.5 (via OpenRouter)"),
