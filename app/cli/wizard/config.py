@@ -84,13 +84,13 @@ ANTHROPIC_MODELS = (
 )
 
 # Source: https://platform.openai.com/docs/models
+# Codex model IDs are intentionally omitted here: OpenSRE's direct OpenAI
+# provider uses Chat Completions, while Codex models require a different API path.
 OPENAI_MODELS = (
     ModelOption(value=OPENAI_REASONING_MODEL, label="GPT-5.4 mini"),
     ModelOption(value="gpt-5.5", label="GPT-5.5"),
     ModelOption(value="gpt-5.4", label="GPT-5.4"),
     ModelOption(value="gpt-5.4-nano", label="GPT-5.4 nano"),
-    ModelOption(value="gpt-5.3-codex", label="GPT-5.3-Codex"),
-    ModelOption(value="gpt-5.2-codex", label="GPT-5.2-Codex"),
 )
 
 # Source: https://openrouter.ai/api/v1/models
