@@ -93,13 +93,13 @@ OPENAI_MODELS = (
     ModelOption(value="gpt-5.2-codex", label="GPT-5.2-Codex"),
 )
 
-# Source: https://openrouter.ai/models — retired Claude 4.5/4.6 IDs replaced with current
+# Source: https://openrouter.ai/api/v1/models (OpenRouter uses dot-separated versions)
 OPENROUTER_MODELS = (
     ModelOption(value=OPENROUTER_REASONING_MODEL, label="OpenRouter Auto (smart routing)"),
     ModelOption(value="openai/gpt-5.5", label="GPT-5.5 (via OpenRouter)"),
-    ModelOption(value="anthropic/claude-opus-4-7", label="Claude Opus 4.7 (via OpenRouter)"),
-    ModelOption(value="anthropic/claude-sonnet-4-6", label="Claude Sonnet 4.6 (via OpenRouter)"),
-    ModelOption(value="anthropic/claude-haiku-4-5", label="Claude Haiku 4.5 (via OpenRouter)"),
+    ModelOption(value="anthropic/claude-opus-4.7", label="Claude Opus 4.7 (via OpenRouter)"),
+    ModelOption(value="anthropic/claude-sonnet-4.6", label="Claude Sonnet 4.6 (via OpenRouter)"),
+    ModelOption(value="anthropic/claude-haiku-4.5", label="Claude Haiku 4.5 (via OpenRouter)"),
     ModelOption(
         value="google/gemini-3.1-pro-preview", label="Gemini 3.1 Pro (preview, via OpenRouter)"
     ),
