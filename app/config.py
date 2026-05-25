@@ -106,19 +106,18 @@ DEEPSEEK_REASONING_MODEL = "deepseek-v4-pro"
 DEEPSEEK_CLASSIFICATION_MODEL = "deepseek-v4-flash"
 DEEPSEEK_TOOLCALL_MODEL = "deepseek-v4-flash"
 
-# Gemini model constants (Google AI preview IDs; OpenAI-compatible endpoint)
-# UNVERIFIED PLACEHOLDER — gemini-3.1-pro-preview / gemini-3.1-flash-lite-preview are
-# forward-looking IDs that may not yet exist. Override via GEMINI_REASONING_MODEL env var.
+# Gemini model constants (Google AI OpenAI-compatible endpoint).
+# Source: https://generativelanguage.googleapis.com/v1beta/models
 GEMINI_REASONING_MODEL = "gemini-3.1-pro-preview"
-GEMINI_CLASSIFICATION_MODEL = "gemini-3-flash-preview"
-GEMINI_TOOLCALL_MODEL = "gemini-3.1-flash-lite-preview"
+GEMINI_CLASSIFICATION_MODEL = "gemini-3.5-flash"
+GEMINI_TOOLCALL_MODEL = "gemini-3.1-flash-lite"
 
 # NVIDIA NIM model constants
-# Verified safe defaults from the NVIDIA API Catalog (build.nvidia.com).
+# Source: https://integrate.api.nvidia.com/v1/models
 # Override via NVIDIA_REASONING_MODEL, NVIDIA_TOOLCALL_MODEL, or NVIDIA_MODEL env vars.
-NVIDIA_REASONING_MODEL = "meta/llama-3.1-405b-instruct"
-NVIDIA_CLASSIFICATION_MODEL = "meta/llama-3.1-70b-instruct"
-NVIDIA_TOOLCALL_MODEL = "meta/llama-3.1-8b-instruct"
+NVIDIA_REASONING_MODEL = "nvidia/nemotron-3-super-120b-a12b"
+NVIDIA_CLASSIFICATION_MODEL = "nvidia/nemotron-3-nano-30b-a3b"
+NVIDIA_TOOLCALL_MODEL = "nvidia/nemotron-3-nano-30b-a3b"
 
 # MiniMax model constants
 MINIMAX_REASONING_MODEL = "MiniMax-M2.7"
