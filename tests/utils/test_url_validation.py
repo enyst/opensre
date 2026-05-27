@@ -91,8 +91,13 @@ def test_is_loopback_host_returns_true_for_localhost_and_loopback_ips(host: str)
         "8.8.8.8",
         "",
         "localhost.example.com",
-        "127.0.0.1:8080",
     ],
 )
 def test_is_loopback_host_returns_false_for_non_loopback_hosts(host: str):
     assert is_loopback_host(host) is False
+
+
+def test_is_loopback_host_returns_false_for_host_port_string():
+    # 127.0.0.1 is loopback, but is_loopback_host expects a bare host;
+    # ip_address() raises ValueError on "host:port" input so False is returned.
+    assert is_loopback_host("127.0.0.1:8080") is False
