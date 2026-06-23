@@ -103,12 +103,10 @@ OPENROUTER_MODELS = (
     ModelOption(
         value="google/gemini-3.1-pro-preview", label="Gemini 3.1 Pro (preview, via OpenRouter)"
     ),
+    ModelOption(value="google/gemini-3.5-flash", label="Gemini 3.5 Flash (via OpenRouter)"),
     ModelOption(
-        value="google/gemini-3-flash-preview", label="Gemini 3 Flash (preview, via OpenRouter)"
-    ),
-    ModelOption(
-        value="google/gemini-3.1-flash-lite-preview",
-        label="Gemini 3.1 Flash-Lite (preview, via OpenRouter)",
+        value="google/gemini-3.1-flash-lite",
+        label="Gemini 3.1 Flash-Lite (via OpenRouter)",
     ),
     ModelOption(
         value="google/gemini-3.1-flash-image-preview",
@@ -121,28 +119,31 @@ OPENROUTER_MODELS = (
     ModelOption(value="meta-llama/llama-4-maverick", label="Llama 4 Maverick (via OpenRouter)"),
     ModelOption(value="meta-llama/llama-4-scout", label="Llama 4 Scout (via OpenRouter)"),
     ModelOption(value="mistralai/mistral-large-2512", label="Mistral Large 3 (via OpenRouter)"),
-    ModelOption(value="x-ai/grok-4", label="Grok 4 (via OpenRouter)"),
-    ModelOption(value="x-ai/grok-4-fast", label="Grok 4 Fast (via OpenRouter)"),
-    ModelOption(value="moonshotai/kimi-k2.5", label="Kimi K2.5 (via OpenRouter)"),
-    ModelOption(value="z-ai/glm-4.7", label="GLM 4.7 (via OpenRouter)"),
-    ModelOption(value="minimax/minimax-m2", label="MiniMax M2 (via OpenRouter)"),
-    ModelOption(value="deepseek/deepseek-v3.2", label="DeepSeek V3.2 (via OpenRouter)"),
-    ModelOption(value="qwen/qwen-3.6-plus-preview", label="Qwen 3.6 Plus (via OpenRouter)"),
+    ModelOption(value="x-ai/grok-4.3", label="Grok 4.3 (via OpenRouter)"),
+    ModelOption(value="x-ai/grok-4.20", label="Grok 4.20 (via OpenRouter)"),
+    ModelOption(value="moonshotai/kimi-k2.6", label="Kimi K2.6 (via OpenRouter)"),
+    ModelOption(value="z-ai/glm-5.1", label="GLM 5.1 (via OpenRouter)"),
+    ModelOption(value="minimax/minimax-m2.7", label="MiniMax M2.7 (via OpenRouter)"),
+    ModelOption(value="deepseek/deepseek-v4-pro", label="DeepSeek V4 Pro (via OpenRouter)"),
+    ModelOption(value="qwen/qwen3.7-max", label="Qwen 3.7 Max (via OpenRouter)"),
 )
 
+# Source: https://api.deepseek.com/models
 DEEPSEEK_MODELS = (
     ModelOption(value=DEEPSEEK_REASONING_MODEL, label="DeepSeek V4 Pro"),
     ModelOption(value="deepseek-v4-flash", label="DeepSeek V4 Flash"),
 )
 
+# Source: https://generativelanguage.googleapis.com/v1beta/models
 GEMINI_MODELS = (
     ModelOption(value=GEMINI_REASONING_MODEL, label="Gemini 3.1 Pro (preview)"),
-    ModelOption(value="gemini-3-flash-preview", label="Gemini 3 Flash (preview)"),
-    ModelOption(value="gemini-3.1-flash-lite-preview", label="Gemini 3.1 Flash-Lite (preview)"),
+    ModelOption(value="gemini-3.5-flash", label="Gemini 3.5 Flash"),
+    ModelOption(value="gemini-3.1-flash-lite", label="Gemini 3.1 Flash-Lite"),
     ModelOption(value="gemini-3.1-flash-image-preview", label="Gemini 3.1 Flash Image (preview)"),
     ModelOption(value="gemini-3-pro-image-preview", label="Gemini 3 Pro Image (preview)"),
 )
 
+# Source: https://integrate.api.nvidia.com/v1/models
 NVIDIA_MODELS = (
     ModelOption(
         value=NVIDIA_REASONING_MODEL,
@@ -151,12 +152,16 @@ NVIDIA_MODELS = (
     ModelOption(value="nvidia/nemotron-3-nano-30b-a3b", label="Nemotron 3 Nano 30B"),
 )
 
+# Source: https://console.groq.com/docs/models
 GROQ_MODELS = (
     ModelOption(value=GROQ_REASONING_MODEL, label="Llama 3.3 70B Versatile"),
     ModelOption(value="llama-3.1-8b-instant", label="Llama 3.1 8B Instant"),
     ModelOption(value="openai/gpt-oss-120b", label="GPT-OSS 120B"),
     ModelOption(value="openai/gpt-oss-20b", label="GPT-OSS 20B"),
     ModelOption(value="qwen/qwen3-32b", label="Qwen3 32B"),
+    ModelOption(
+        value="meta-llama/llama-4-maverick-17b-128e-instruct", label="Llama 4 Maverick 17B"
+    ),
     ModelOption(value="meta-llama/llama-4-scout-17b-16e-instruct", label="Llama 4 Scout 17B"),
 )
 
